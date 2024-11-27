@@ -9,8 +9,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Adiciona as dependências de teste
 RUN pip install --no-cache-dir pytest pytest-mock
 
-COPY tests/ /app/tests/
+#COPY tests/ /app/tests/
 
-COPY app.py /app/
+#COPY app.py /app/
+COPY . .
 
 CMD ["flask", "run", "--host=0.0.0.0"]

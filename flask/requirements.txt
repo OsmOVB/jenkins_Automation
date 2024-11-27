@@ -8,3 +8,4 @@ WTForms==2.3.3  # Versão compatível com Flask-AppBuilder que contém o módulo
 prometheus-flask-exporter==0.18.3
 pytest==7.4.2 # Versão do Pytest para execução dos testes
 pytest-mock==3.11.1 # Extensão do Pytest para mock de objetos
+requests==2.31.0 # Biblioteca para requisições HTTP
