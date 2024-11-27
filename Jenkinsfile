@@ -22,7 +22,7 @@ pipeline {
                 sh 'docker-compose build --no-cache'
             }
         }
-        
+
         stage('Testar Aplicação') {
             steps {
                 echo "=== Executando testes ==="
@@ -30,21 +30,24 @@ pipeline {
                     sh 'docker-compose up -d mariadb flask'
                     sh 'sleep 10' // Tempo para inicializar os serviços
                     
-                    // Verifica se o container Flask está ativo
-                    sh '''
-                    CONTAINER_ID=$(docker ps -qf "name=flask")
-                    if [ -z "$CONTAINER_ID" ]; then
-                        echo "Erro: o container Flask não está em execução!"
-                        exit 1
-                    fi
-                    '''
+                    // Captura apenas o primeiro container correspondente ao nome
+                    def containerId = sh(
+                        script: 'docker ps -qf name=flask | head -n 1',
+                        returnStdout: true
+                    ).trim()
                     
-                    // Executa os testes
-                    sh 'docker exec $(docker ps -qf "name=flask") pytest /app/tests'
+                    if (containerId) {
+                        echo "Executando testes no container ID: ${containerId}"
+                        sh "docker exec ${containerId} pytest /app/tests"
+                    } else {
+                        error "Nenhum container Flask encontrado em execução!"
+                    }
+                    
                     sh 'docker-compose down'
                 }
             }
         }
+
 
 
         
