@@ -7,6 +7,7 @@ pipeline {
                 script {
                     // Parar e remover containers existentes, se houver
                     sh '''
+                    docker stop $(docker ps -aq) && docker rm $(docker ps -aq)
                     docker-compose down || true
                     docker system prune -f || true
                     '''
@@ -25,18 +26,14 @@ pipeline {
             steps {
                 echo "=== Executando testes ==="
                 script {
-                    // Subir os serviços
                     sh 'docker-compose up -d mariadb flask'
-                    sh 'sleep 10' // Aguarda inicialização dos serviços
-
-                    // Rodar os testes dentro do container Flask
-                    sh 'docker exec $(docker ps -qf "name=flask") python /app/tests/test_cadastrar_aluno.py'
-
-                    // Derrubar os serviços após os testes
+                    sh 'sleep 10' // Tempo para inicializar os serviços
+                    sh 'docker exec $(docker ps -qf "name=flask") pytest /app/tests'
                     sh 'docker-compose down'
                 }
             }
         }
+
         
         stage('Run Containers') {
             steps {
