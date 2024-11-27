@@ -20,6 +20,24 @@ pipeline {
                 sh 'docker-compose build --no-cache'
             }
         }
+
+        stage('Testar Aplicação') {
+            steps {
+                echo "=== Executando testes ==="
+                script {
+                    // Subir os serviços
+                    sh 'docker-compose up -d mariadb flask'
+                    sh 'sleep 10' // Aguarda inicialização dos serviços
+
+                    // Rodar os testes dentro do container Flask
+                    sh 'docker exec $(docker ps -qf "name=flask") python /app/tests/test_cadastrar_aluno.py'
+
+                    // Derrubar os serviços após os testes
+                    sh 'docker-compose down'
+                }
+            }
+        }
+
         
         stage('Run Containers') {
             steps {
