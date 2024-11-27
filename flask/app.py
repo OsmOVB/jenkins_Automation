@@ -27,6 +27,15 @@ appbuilder = AppBuilder(app, db.session)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Modelo de Aluno - Definição da tabela 'Aluno' no banco de dados
+class Aluno(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(50), nullable=False)
+    sobrenome = db.Column(db.String(50), nullable=False)
+    turma = db.Column(db.String(50), nullable=False)
+    disciplinas = db.Column(db.String(200), nullable=False)
+
+
 # Tentar conectar até o MariaDB estar pronto
 attempts = 5
 for i in range(attempts):
@@ -53,13 +62,6 @@ for i in range(attempts):
             logger.error("Não foi possível conectar ao banco de dados após várias tentativas.")
             raise
 
-# Modelo de Aluno - Definição da tabela 'Aluno' no banco de dados
-class Aluno(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    nome = db.Column(db.String(50), nullable=False)
-    sobrenome = db.Column(db.String(50), nullable=False)
-    turma = db.Column(db.String(50), nullable=False)
-    disciplinas = db.Column(db.String(200), nullable=False)
 
 # Visão do modelo Aluno para o painel administrativo
 class AlunoModelView(ModelView):
