@@ -10,7 +10,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --no-cache-dir pytest pytest-mock
 
 COPY . .
-#COPY . .
-#COPY app.py /app/
 
 CMD ["flask", "run", "--host=0.0.0.0"]
