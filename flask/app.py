@@ -35,7 +35,6 @@ class Aluno(db.Model):
     turma = db.Column(db.String(50), nullable=False)
     disciplinas = db.Column(db.String(200), nullable=False)
 
-
 # Tentar conectar até o MariaDB estar pronto
 attempts = 5
 for i in range(attempts):
