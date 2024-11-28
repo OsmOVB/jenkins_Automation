@@ -51,7 +51,7 @@ pipeline {
         stage('Deploy Application') {
             steps {
                 echo '=== Realizando deploy da aplicação ==='
-                sh 'docker-compose up -d'  // Subir os containers da aplicação em modo detach
+                sh 'docker-compose up -build'  // Subir os containers da aplicação em modo detach
             }
         }
     }
