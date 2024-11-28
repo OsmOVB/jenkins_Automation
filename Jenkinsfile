@@ -35,10 +35,10 @@ pipeline {
                     docker-compose up -d mariadb flask
                     sleep 10  # Aguarda a inicialização dos serviços
                     '''
-                    sh 'docker ps'
+                    sh 'docker ps -qf "name=flask_mariadb-flask"'
                     // Executar testes dentro do container Flask
                     sh '''
-                    docker exec $(docker ps -qf "name=mariadb_flask") \
+                    docker exec $(docker ps -qf "name=flask_mariadb-flask") \
                     python /app/tests/test_cadastrar_aluno.py
                     '''
 
