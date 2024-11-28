@@ -30,19 +30,22 @@ pipeline {
             steps {
                 echo '=== Executando testes ==='
                 script {
-                    // Subir os serviços necessários para os testes
-                    sh '''
-                    docker-compose up -d mariadb flask
-                    sleep 10  # Aguarda a inicialização dos serviços
-                    '''
-
-                    // Executar testes dentro do container Flask
-                    sh '''
-                    docker exec $(docker ps -qf "name=flask") \
-                    python /app/tests/test_cadastrar_aluno.py
-                    '''
-
-                    // Derrubar os serviços após os testes
+                    sh 'docker-compose up -d mariadb flask'
+                    sh 'sleep 10' // Tempo para inicializar os serviços
+                    // Inicializa o banco de dados
+                    sh 'docker exec $(docker ps -qf "name=flask") flask db upgrade'
+                    // Captura apenas o primeiro container correspondente ao nome
+                    def containerId = sh(
+                        script: 'docker ps -qf name=flask | head -n 1',
+                        returnStdout: true
+                    ).trim()
+                    if (containerId) {
+                        echo "Executando testes no container ID: ${containerId}"
+                        sh "docker exec ${containerId} python /app/tests/test_cadastrar_aluno.py"
+                    } else {
+                        error "Nenhum container Flask encontrado em execução!"
+                    }
+                    
                     sh 'docker-compose down'
                 }
             }
