@@ -37,6 +37,7 @@ pipeline {
                     sleep 10  # Aguarda a inicialização dos serviços
                     '''
                     echo 'docker exec $(docker ps -qf "name=flask")/python /app/tests/test_cadastrar_aluno.py'
+                    sh 'docker ps'
                     // Executar testes dentro do container Flask
                     sh 'docker exec $(docker ps -qf "name=flask")/python /app/tests/test_cadastrar_aluno.py'
                     // Derrubar os serviços após os testes
