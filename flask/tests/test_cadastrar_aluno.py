@@ -2,7 +2,7 @@ import requests
 import json
 
 # URL base da API
-BASE_URL = "http://flask:5000"
+BASE_URL = "http://localhost:5000"
 
 def test_cadastrar_aluno():
     """
