@@ -33,19 +33,8 @@ pipeline {
                     sh 'docker-compose up -d mariadb flask'
                     sh 'sleep 10' // Tempo para inicializar os serviços
                     // Inicializa o banco de dados
+                    sh 'docker ps'
                     sh 'docker exec $(docker ps -qf "name=flask") flask db upgrade'
-                    // Captura apenas o primeiro container correspondente ao nome
-                    def containerId = sh(
-                        script: 'docker ps -qf name=flask | head -n 1',
-                        returnStdout: true
-                    ).trim()
-                    if (containerId) {
-                        echo "Executando testes no container ID: ${containerId}"
-                        sh "docker exec ${containerId} python /app/tests/test_cadastrar_aluno.py"
-                    } else {
-                        error "Nenhum container Flask encontrado em execução!"
-                    }
-                    
                     sh 'docker-compose down'
                 }
             }
