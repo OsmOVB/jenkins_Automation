@@ -1,6 +1,6 @@
 # Código principal do Flask (app.py)
 import time
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 from flask_sqlalchemy import SQLAlchemy
 from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.models.sqla.interface import SQLAInterface
@@ -74,6 +74,28 @@ appbuilder.add_view(
     icon="fa-folder-open-o",
     category="Alunos",
 )
+
+# Endpoint to expose MariaDB metrics
+@app.route('/metrics')
+def metrics_endpoint():
+    # Get MariaDB metrics using SQLAlchemy
+    res = db.session.execute('SHOW STATUS LIKE "Threads_connected";').fetchone()
+    threads_connected = res[1] if res else 0
+
+    # Custom metric
+    custom_metric = f"# TYPE mariadb_threads_connected gauge\nmariadb_threads_connected {threads_connected}\n"
+
+    # Optionally, query other database metrics
+    # e.g., the number of queries executed
+    res = db.session.execute('SHOW STATUS LIKE "Queries";').fetchone()
+    queries = res[1] if res else 0
+
+    # Add more metrics as needed
+    custom_metric += f"# TYPE mariadb_queries gauge\nmariadb_queries {queries}\n"
+
+    # Return the Prometheus-formatted metrics
+    return Response(custom_metric, mimetype="text/plain")
+
 
 # Rota para listar todos os alunos - Método GET
 @app.route('/alunos', methods=['GET'])

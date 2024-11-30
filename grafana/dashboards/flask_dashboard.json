@@ -1,0 +1,115 @@
+{
+    "uid": "flask_dashboard",
+    "title": "Dashboard Flask Application",
+    "tags": ["Flask", "HTTP Requests"],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 1,
+    "panels": [
+      {
+        "type": "graph",
+        "title": "HTTP Requests Rate",
+        "datasource": "Prometheus",
+        "gridPos": {
+          "x": 0,
+          "y": 0,
+          "w": 24,
+          "h": 10
+        },
+        "targets": [
+          {
+            "expr": "sum(rate(flask_http_request_duration_seconds_count{job=\"flask_app_exporter\"}[1m])) by (method, status)",
+            "legendFormat": "{{method}} {{status}}",
+            "refId": "A"
+          }
+        ],
+        "xaxis": {
+          "show": true,
+          "mode": "time"
+        },
+        "yaxes": [
+          {
+            "format": "short",
+            "show": true,
+            "label": "Requests per Second"
+          },
+          {
+            "show": true
+          }
+        ],
+        "lines": true,
+        "fill": 1,
+        "linewidth": 1,
+        "points": false,
+        "pointradius": 2,
+        "stack": false,
+        "legend": {
+          "show": true,
+          "values": false,
+          "min": false,
+          "max": false,
+          "avg": false,
+          "current": false,
+          "total": false,
+          "alignAsTable": false
+        }
+      },
+      {
+        "type": "graph",
+        "title": "MariaDB Queries Rate",
+        "datasource": "Prometheus",
+        "gridPos": {
+          "x": 0,
+          "y": 10,
+          "w": 24,
+          "h": 10
+        },
+        "targets": [
+          {
+            "expr": "mariadb_queries",
+            "format": "status",
+            "interval": "",
+            "intervalFactor": 1,
+            "legendFormat": "Queries",
+            "refId": "B"
+          }
+        ],
+        "xaxis": {
+          "show": true,
+          "mode": "time"
+        },
+        "yaxes": [
+          {
+            "format": "short",
+            "show": true,
+            "label": "Queries per Second"
+          },
+          {
+            "show": true
+          }
+        ],
+        "lines": true,
+        "fill": 1,
+        "linewidth": 1,
+        "points": false,
+        "pointradius": 2,
+        "stack": false,
+        "legend": {
+          "show": true,
+          "values": false,
+          "min": false,
+          "max": false,
+          "avg": false,
+          "current": false,
+          "total": false,
+          "alignAsTable": false
+        }
+      }
+    ],
+    "templating": {
+      "list": []
+    },
+    "annotations": {
+      "list": []
+    }
+  }

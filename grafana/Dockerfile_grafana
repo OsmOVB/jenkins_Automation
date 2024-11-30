@@ -9,7 +9,7 @@ RUN mkdir -p /var/lib/grafana/dashboards
 COPY provisioning/datasource.yml /etc/grafana/provisioning/datasources/
 COPY provisioning/dashboard.yml /etc/grafana/provisioning/dashboards/
 COPY dashboards/mariadb_dashboard.json /var/lib/grafana/dashboards/
-
+COPY dashboards/flask_dashboard.json /var/lib/grafana/dashboards/
 # Garantir permissões para o usuário grafana
 RUN chown -R 472:472 /etc/grafana/provisioning /var/lib/grafana/dashboards
 
