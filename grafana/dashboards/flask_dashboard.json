@@ -1,183 +1,221 @@
 {
-    "uid": "flask_dashboard",
-    "title": "Dashboard Flask Application",
-    "tags": ["Flask", "HTTP Requests"],
-    "timezone": "browser",
-    "schemaVersion": 16,
-    "version": 2,
-    "panels": [
-      {
-        "type": "graph",
-        "title": "HTTP Requests Rate (Successful)",
-        "datasource": "Prometheus",
-        "gridPos": {
-          "x": 0,
-          "y": 0,
-          "w": 24,
-          "h": 10
-        },
-        "targets": [
-          {
-            "expr": "sum(rate(prometheus_http_requests_total{job=\"prometheus\", code=\"200\"}[1m])) by (handler)",
-            "legendFormat": "{{handler}}",
-            "refId": "A"
-          }
-        ],
-        "xaxis": {
-          "show": true,
-          "mode": "time"
-        },
-        "yaxes": [
-          {
-            "format": "ops",
-            "show": true,
-            "label": "Requests per Second"
-          },
-          {
-            "show": false
-          }
-        ],
-        "lines": true,
-        "fill": 1,
-        "linewidth": 2,
-        "points": false,
-        "pointradius": 2,
-        "stack": false,
-        "legend": {
-          "show": true,
-          "values": true,
-          "alignAsTable": true
-        },
-        "tooltip": {
-          "shared": true,
-          "sort": 0
-        }
-      },
-      {
-        "type": "graph",
-        "title": "HTTP Errors Rate",
-        "datasource": "Prometheus",
-        "gridPos": {
-          "x": 0,
-          "y": 10,
-          "w": 24,
-          "h": 10
-        },
-        "targets": [
-          {
-            "expr": "sum(rate(prometheus_http_requests_total{job=\"prometheus\", code!=\"200\"}[1m])) by (code, handler)",
-            "legendFormat": "Code {{code}}, Handler {{handler}}",
-            "refId": "B"
-          }
-        ],
-        "xaxis": {
-          "show": true,
-          "mode": "time"
-        },
-        "yaxes": [
-          {
-            "format": "ops",
-            "show": true,
-            "label": "Errors per Second"
-          },
-          {
-            "show": false
-          }
-        ],
-        "lines": true,
-        "fill": 1,
-        "linewidth": 2,
-        "points": false,
-        "pointradius": 2,
-        "stack": false,
-        "legend": {
-          "show": true,
-          "values": true,
-          "alignAsTable": true
-        },
-        "tooltip": {
-          "shared": true,
-          "sort": 0
-        }
-      },
-      {
-        "type": "stat",
-        "title": "Total HTTP Requests (Last 5m)",
-        "datasource": "Prometheus",
-        "gridPos": {
-          "x": 0,
-          "y": 20,
-          "w": 12,
-          "h": 6
-        },
-        "targets": [
-          {
-            "expr": "sum(increase(prometheus_http_requests_total[5m]))",
-            "refId": "C"
-          }
-        ],
-        "format": "short",
-        "colorMode": "background",
-        "thresholds": "0,100,500",
-        "valueName": "current"
-      },
-      
-      {
-        "type": "stat",
-        "title": "Error Rate Percentage (Last 5m)",
-        "datasource": "Prometheus",
-        "gridPos": {
-          "x": 12,
-          "y": 20,
-          "w": 12,
-          "h": 6
-        },
-        "targets": [
-          {
-            "expr": "(sum(increase(prometheus_http_requests_total{code!=\"200\"}[5m])) / sum(increase(prometheus_http_requests_total[5m]))) * 100",
-            "refId": "D"
-          }
-        ],
-        "format": "percent",
-        "colorMode": "value",
-        "thresholds": "0,5,10",
-        "valueName": "current"
+  "uid": "flask_dashboard_refined",
+  "title": "Refined Flask Application Dashboard",
+  "tags": ["Flask", "HTTP Requests", "Performance"],
+  "timezone": "browser",
+  "schemaVersion": 16,
+  "version": 4,
+  "panels": [
+    {
+      "type": "row",
+      "title": "Request Rates Overview",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 1
       }
-    ],
-    "templating": {
-      "list": [
+    },
+    {
+      "type": "stat",
+      "title": "Total Requests (Last 5m)",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "x": 0,
+        "y": 1,
+        "w": 6,
+        "h": 5
+      },
+      "targets": [
         {
-          "type": "query",
-          "datasource": "Prometheus",
-          "name": "job",
-          "label": "Job",
-          "query": "label_values(prometheus_http_requests_total, job)",
-          "includeAll": true,
-          "multi": true,
-          "refresh": true
+          "expr": "sum(increase(prometheus_http_requests_total[5m])) or vector(0)",
+          "refId": "A"
+        }
+      ],
+      "colorMode": "background",
+      "thresholds": "0,100,1000",
+      "valueName": "current",
+      "format": "short",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        }
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Error Rate Percentage (Last 5m)",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "x": 6,
+        "y": 1,
+        "w": 6,
+        "h": 5
+      },
+      "targets": [
+        {
+          "expr": "(sum(increase(prometheus_http_requests_total{code!=\"200\"}[5m])) / sum(increase(prometheus_http_requests_total[5m]))) * 100 or vector(0)",
+          "refId": "B"
+        }
+      ],
+      "colorMode": "value",
+      "thresholds": "0,5,10",
+      "valueName": "current",
+      "format": "percent"
+    },
+    {
+      "type": "graph",
+      "title": "HTTP Requests Rate by Handler",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "x": 0,
+        "y": 6,
+        "w": 24,
+        "h": 10
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(prometheus_http_requests_total[1m])) by (handler)",
+          "legendFormat": "{{handler}}",
+          "refId": "C"
+        }
+      ],
+      "xaxis": {
+        "mode": "time",
+        "show": true
+      },
+      "yaxes": [
+        {
+          "format": "ops",
+          "show": true,
+          "label": "Requests per Second"
         },
         {
-          "type": "query",
-          "datasource": "Prometheus",
-          "name": "code",
-          "label": "HTTP Code",
-          "query": "label_values(prometheus_http_requests_total, code)",
-          "includeAll": true,
-          "multi": true,
-          "refresh": true
+          "show": false
         }
-      ]
+      ],
+      "lines": true,
+      "fill": 1,
+      "linewidth": 2,
+      "legend": {
+        "show": true,
+        "alignAsTable": true
+      },
+      "tooltip": {
+        "shared": true,
+        "sort": 0
+      }
     },
-    "annotations": {
-      "list": [
+    {
+      "type": "row",
+      "title": "HTTP Error Analysis",
+      "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 24,
+        "h": 1
+      }
+    },
+    {
+      "type": "graph",
+      "title": "Error Rate by HTTP Code",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "x": 0,
+        "y": 17,
+        "w": 24,
+        "h": 10
+      },
+      "targets": [
         {
-          "name": "Deployments",
-          "datasource": "Prometheus",
-          "enable": true,
-          "expr": "changes(prometheus_http_requests_total[1m])",
-          "iconColor": "rgba(255, 96, 96, 1)"
+          "expr": "sum(rate(prometheus_http_requests_total{code!=\"200\"}[1m])) by (code) or vector(0)",
+          "legendFormat": "Code {{code}}",
+          "refId": "D"
         }
-      ]
+      ],
+      "xaxis": {
+        "mode": "time",
+        "show": true
+      },
+      "yaxes": [
+        {
+          "format": "ops",
+          "show": true,
+          "label": "Errors per Second"
+        },
+        {
+          "show": false
+        }
+      ],
+      "lines": true,
+      "fill": 2,
+      "linewidth": 2,
+      "legend": {
+        "show": true,
+        "alignAsTable": true
+      },
+      "tooltip": {
+        "shared": true,
+        "sort": 0
+      }
+    },
+    {
+      "type": "barGauge",
+      "title": "Error Distribution by HTTP Code",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "x": 0,
+        "y": 27,
+        "w": 24,
+        "h": 6
+      },
+      "targets": [
+        {
+          "expr": "sum(increase(prometheus_http_requests_total{code!=\"200\"}[5m])) by (code) or vector(0)",
+          "refId": "E"
+        }
+      ],
+      "options": {
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "values": false
+        }
+      }
     }
+  ],
+  "templating": {
+    "list": [
+      {
+        "type": "query",
+        "datasource": "Prometheus",
+        "name": "job",
+        "label": "Job",
+        "query": "label_values(prometheus_http_requests_total, job)",
+        "includeAll": true,
+        "multi": true,
+        "refresh": true
+      },
+      {
+        "type": "query",
+        "datasource": "Prometheus",
+        "name": "code",
+        "label": "HTTP Code",
+        "query": "label_values(prometheus_http_requests_total, code)",
+        "includeAll": true,
+        "multi": true,
+        "refresh": true
+      }
+    ]
+  },
+  "annotations": {
+    "list": [
+      {
+        "name": "Deployments",
+        "datasource": "Prometheus",
+        "enable": true,
+        "expr": "changes(prometheus_http_requests_total[1m])",
+        "iconColor": "rgba(255, 96, 96, 1)"
+      }
+    ]
   }
-  
+}
