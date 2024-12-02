@@ -4,11 +4,11 @@
     "tags": ["Flask", "HTTP Requests"],
     "timezone": "browser",
     "schemaVersion": 16,
-    "version": 1,
+    "version": 2,
     "panels": [
       {
         "type": "graph",
-        "title": "HTTP Requests Rate",
+        "title": "HTTP Requests Rate (Successful)",
         "datasource": "Prometheus",
         "gridPos": {
           "x": 0,
@@ -18,8 +18,8 @@
         },
         "targets": [
           {
-            "expr": "sum(rate(flask_http_request_duration_seconds_count{job=\"flask_app_exporter\"}[1m])) by (method, status)",
-            "legendFormat": "{{method}} {{status}}",
+            "expr": "sum(rate(prometheus_http_requests_total{job=\"prometheus\", code=\"200\"}[1m])) by (handler)",
+            "legendFormat": "{{handler}}",
             "refId": "A"
           }
         ],
@@ -29,34 +29,33 @@
         },
         "yaxes": [
           {
-            "format": "short",
+            "format": "ops",
             "show": true,
             "label": "Requests per Second"
           },
           {
-            "show": true
+            "show": false
           }
         ],
         "lines": true,
         "fill": 1,
-        "linewidth": 1,
+        "linewidth": 2,
         "points": false,
         "pointradius": 2,
         "stack": false,
         "legend": {
           "show": true,
-          "values": false,
-          "min": false,
-          "max": false,
-          "avg": false,
-          "current": false,
-          "total": false,
-          "alignAsTable": false
+          "values": true,
+          "alignAsTable": true
+        },
+        "tooltip": {
+          "shared": true,
+          "sort": 0
         }
       },
       {
         "type": "graph",
-        "title": "MariaDB Queries Rate",
+        "title": "HTTP Errors Rate",
         "datasource": "Prometheus",
         "gridPos": {
           "x": 0,
@@ -66,11 +65,8 @@
         },
         "targets": [
           {
-            "expr": "mariadb_queries",
-            "format": "status",
-            "interval": "",
-            "intervalFactor": 1,
-            "legendFormat": "Queries",
+            "expr": "sum(rate(prometheus_http_requests_total{job=\"prometheus\", code!=\"200\"}[1m])) by (code, handler)",
+            "legendFormat": "Code {{code}}, Handler {{handler}}",
             "refId": "B"
           }
         ],
@@ -80,36 +76,108 @@
         },
         "yaxes": [
           {
-            "format": "short",
+            "format": "ops",
             "show": true,
-            "label": "Queries per Second"
+            "label": "Errors per Second"
           },
           {
-            "show": true
+            "show": false
           }
         ],
         "lines": true,
         "fill": 1,
-        "linewidth": 1,
+        "linewidth": 2,
         "points": false,
         "pointradius": 2,
         "stack": false,
         "legend": {
           "show": true,
-          "values": false,
-          "min": false,
-          "max": false,
-          "avg": false,
-          "current": false,
-          "total": false,
-          "alignAsTable": false
+          "values": true,
+          "alignAsTable": true
+        },
+        "tooltip": {
+          "shared": true,
+          "sort": 0
         }
+      },
+      {
+        "type": "stat",
+        "title": "Total HTTP Requests (Last 5m)",
+        "datasource": "Prometheus",
+        "gridPos": {
+          "x": 0,
+          "y": 20,
+          "w": 12,
+          "h": 6
+        },
+        "targets": [
+          {
+            "expr": "sum(increase(prometheus_http_requests_total[5m]))",
+            "refId": "C"
+          }
+        ],
+        "format": "short",
+        "colorMode": "background",
+        "thresholds": "0,100,500",
+        "valueName": "current"
+      },
+      
+      {
+        "type": "stat",
+        "title": "Error Rate Percentage (Last 5m)",
+        "datasource": "Prometheus",
+        "gridPos": {
+          "x": 12,
+          "y": 20,
+          "w": 12,
+          "h": 6
+        },
+        "targets": [
+          {
+            "expr": "(sum(increase(prometheus_http_requests_total{code!=\"200\"}[5m])) / sum(increase(prometheus_http_requests_total[5m]))) * 100",
+            "refId": "D"
+          }
+        ],
+        "format": "percent",
+        "colorMode": "value",
+        "thresholds": "0,5,10",
+        "valueName": "current"
       }
     ],
     "templating": {
-      "list": []
+      "list": [
+        {
+          "type": "query",
+          "datasource": "Prometheus",
+          "name": "job",
+          "label": "Job",
+          "query": "label_values(prometheus_http_requests_total, job)",
+          "includeAll": true,
+          "multi": true,
+          "refresh": true
+        },
+        {
+          "type": "query",
+          "datasource": "Prometheus",
+          "name": "code",
+          "label": "HTTP Code",
+          "query": "label_values(prometheus_http_requests_total, code)",
+          "includeAll": true,
+          "multi": true,
+          "refresh": true
+        }
+      ]
     },
     "annotations": {
-      "list": []
+      "list": [
+        {
+          "name": "Deployments",
+          "datasource": "Prometheus",
+          "enable": true,
+          "expr": "changes(prometheus_http_requests_total[1m])",
+          "iconColor": "rgba(255, 96, 96, 1)"
+        }
+      ]
     }
   }
+  
