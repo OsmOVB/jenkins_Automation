@@ -4,7 +4,7 @@
   "tags": ["Flask", "HTTP Requests", "Performance"],
   "timezone": "browser",
   "schemaVersion": 16,
-  "version": 4,
+  "version": 5,
   "panels": [
     {
       "type": "row",
@@ -157,29 +157,6 @@
       "tooltip": {
         "shared": true,
         "sort": 0
-      }
-    },
-    {
-      "type": "barGauge",
-      "title": "Error Distribution by HTTP Code",
-      "datasource": "Prometheus",
-      "gridPos": {
-        "x": 0,
-        "y": 27,
-        "w": 24,
-        "h": 6
-      },
-      "targets": [
-        {
-          "expr": "sum(increase(prometheus_http_requests_total{code!=\"200\"}[5m])) by (code) or vector(0)",
-          "refId": "E"
-        }
-      ],
-      "options": {
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "values": false
-        }
       }
     }
   ],
