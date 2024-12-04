@@ -9,7 +9,6 @@
 Este projeto é uma aplicação Flask integrada com MariaDB, monitorada por Prometheus e Grafana, com pipeline de CI/CD configurada no Jenkins.
 
 ## Configuração
-- Clone o repositório: `git clone <url>`
 - Execute: `sh start.sh`
 
 ## Acessos
